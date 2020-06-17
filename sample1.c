@@ -46,7 +46,7 @@ void display (char * ssd)
   }
   glClear(GL_COLOR_BUFFER_BIT); // 画面全体をglClearColorで指定した色で塗る
   //glRectf(locx-20.0, locy-20.0, locx, locy); // 長方形（正方形）
-  glCirclef(locx,locy,10.0,255,0,0);
+  glCirclef(locx,locy,10.0,0,255,100);
 }
 
 void glCirclef(GLfloat locx,GLfloat locy,GLfloat radius,int r,int g,int b) {
