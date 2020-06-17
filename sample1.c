@@ -3,6 +3,8 @@
 #include <gl/gl.h>
 #include <stdio.h>
 #include <process.h>
+#include <math.h>
+#define M_PI 3.14159265358979
 
 void EnableOpenGL(void); // prototype宣言
 void DisableOpenGL(HWND); // prototype宣言
@@ -11,6 +13,8 @@ HGLRC hRC;
 int wx, wy; // displayの横と縦のpixel数格納用変数
 int finish = 0; /* 生成したスレッドを終了させるかどうかを最初のスレッド
 		   から通知するための変数。0なら終了しない、1なら終了 */
+
+void glCirclef(GLfloat,GLfloat,GLfloat);
 
 void display (char * ssd)
 {
@@ -41,8 +45,24 @@ void display (char * ssd)
     exit(0);
   }
   glClear(GL_COLOR_BUFFER_BIT); // 画面全体をglClearColorで指定した色で塗る
-  glRectf(locx-20.0, locy-20.0, locx, locy); // 長方形（正方形）
-  glRectf(locx-20.0-100.0, locy-20.0, locx-100.0, locy);
+  //glRectf(locx-20.0, locy-20.0, locx, locy); // 長方形（正方形）
+  glCirclef(locx,locy,10.0);
+}
+
+void glCirclef(GLfloat locx,GLfloat locy,GLfloat radius) {
+  int n = 100;
+  double rate;
+  GLfloat x,y;
+  glBegin(GL_POLYGON);    //ポリゴンの描画
+  //円を描画
+  for(int i = 0; i <n; i++) {
+    //座標計算
+    rate = (double)i / n;
+    x = radius * cos(2.0 * M_PI * rate) + locx;
+    y = radius * sin(2.0 * M_PI * rate) + locy;
+    glVertex3d(x,y,0.0);
+  }
+  glEnd();
 }
 
 unsigned __stdcall disp (void *arg) {
