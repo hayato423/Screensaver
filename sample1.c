@@ -20,10 +20,27 @@ typedef struct circle{
   GLfloat radius;
   GLfloat velx;
   GLfloat vely;
-  GLfloat color;
+  Color color;
 } Circle;
 
+typedef struct color{
+  int red;
+  int gleen;
+  int blue;
+} Color;
+
 void glCirclef(GLfloat,GLfloat,GLfloat,int,int,int);
+
+
+Circle c;
+c.locx = 0.0;
+c.loxy = 0.0;
+c.radius = 20.0;
+c.velx = 10.0;
+c.vely = 0.0;
+c.color.red = 255;
+c.color.gleen = 0;
+c.color.blue = 0;
 
 void display (char * ssd)
 {
