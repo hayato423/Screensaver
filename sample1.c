@@ -14,7 +14,7 @@ int wx, wy; // displayの横と縦のpixel数格納用変数
 int finish = 0; /* 生成したスレッドを終了させるかどうかを最初のスレッド
 		   から通知するための変数。0なら終了しない、1なら終了 */
 
-void glCirclef(GLfloat,GLfloat,GLfloat);
+void glCirclef(GLfloat,GLfloat,GLfloat,int,int,int);
 
 void display (char * ssd)
 {
@@ -46,13 +46,14 @@ void display (char * ssd)
   }
   glClear(GL_COLOR_BUFFER_BIT); // 画面全体をglClearColorで指定した色で塗る
   //glRectf(locx-20.0, locy-20.0, locx, locy); // 長方形（正方形）
-  glCirclef(locx,locy,10.0);
+  glCirclef(locx,locy,10.0,255,0,0);
 }
 
-void glCirclef(GLfloat locx,GLfloat locy,GLfloat radius) {
+void glCirclef(GLfloat locx,GLfloat locy,GLfloat radius,int r,int g,int b) {
   int n = 100;
   double rate;
   GLfloat x,y;
+  glColor3f(r,g,b);
   glBegin(GL_POLYGON);    //ポリゴンの描画
   //円を描画
   for(int i = 0; i <n; i++) {
