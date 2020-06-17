@@ -14,6 +14,15 @@ int wx, wy; // displayの横と縦のpixel数格納用変数
 int finish = 0; /* 生成したスレッドを終了させるかどうかを最初のスレッド
 		   から通知するための変数。0なら終了しない、1なら終了 */
 
+typedef struct circle{
+  GLfloat locx;
+  GLfloat locy;
+  GLfloat radius;
+  GLfloat velx;
+  GLfloat vely;
+  GLfloat color;
+} Circle;
+
 void glCirclef(GLfloat,GLfloat,GLfloat,int,int,int);
 
 void display (char * ssd)
