@@ -14,6 +14,12 @@ int wx, wy; // displayの横と縦のpixel数格納用変数
 int finish = 0; /* 生成したスレッドを終了させるかどうかを最初のスレッド
 		   から通知するための変数。0なら終了しない、1なら終了 */
 
+typedef struct color{
+  int red;
+  int gleen;
+  int blue;
+} Color;
+
 typedef struct circle{
   GLfloat locx;
   GLfloat locy;
@@ -23,26 +29,14 @@ typedef struct circle{
   Color color;
 } Circle;
 
-typedef struct color{
-  int red;
-  int gleen;
-  int blue;
-} Color;
+
 
 void glCirclef(GLfloat,GLfloat,GLfloat,int,int,int);
 
 
-Circle c;
-c.locx = 0.0;
-c.loxy = 0.0;
-c.radius = 20.0;
-c.velx = 10.0;
-c.vely = 0.0;
-c.color.red = 255;
-c.color.gleen = 0;
-c.color.blue = 0;
 
-void display (char * ssd)
+
+void display (char * ssd,double* aom )
 {
   // static修飾子がついているのは、次のdisplay関数呼び出し時に前の値を使うため。
   static int i=0; // URDL100文字格納配列のインデックス
@@ -55,16 +49,16 @@ void display (char * ssd)
   i++; // 次のdisplay関数呼び出し時のためにiの値を増やす
   switch (direction) {
   case 'U':
-    locy+=0.5;
+    locy+=aom[i];
     break;
   case 'D':
-    locy-=0.5;
+    locy-=aom[i];
     break;
   case 'R':
-    locx+=0.5;
+    locx+=aom[i];
     break;
   case 'L':
-    locx-=0.5;
+    locx-=aom[i];
     break;
   default: // UDRL以外の文字が含まれていたら終了
     fprintf(stderr, "Invalid character.\n");
@@ -94,6 +88,8 @@ void glCirclef(GLfloat locx,GLfloat locy,GLfloat radius,int r,int g,int b) {
 
 unsigned __stdcall disp (void *arg) {
   char ssd[100];
+  //移動量を格納する配列
+  double aom[100];
   FILE *fp=NULL;
 
   EnableOpenGL(); // OpenGL設定
@@ -117,18 +113,26 @@ unsigned __stdcall disp (void *arg) {
     fprintf (stderr, "failed to open the file \"sample1\"\n");
     exit(0);
   }
+  /*
   for (int i=0; i<100; i++)
-    if (fscanf (fp, "%c", &ssd[i]) == EOF){ // 100文字なかったら終了
+    if (fscanf (fp, "%c,%lf", &ssd[i],&aom[i]) == EOF){ // 100文字なかったら終了
       fprintf (stderr, "The length of the input is less than 100.\n");
       exit(0);
     }
+  */
+  int i = 0;
+  while(fscanf(fp,"%c,%lf",&ssd[i],&aom[i]) != EOF){
+    fprintf(stderr,"%c %f\n",ssd[i],aom[i]);
+    i += 1;
+  }
+
   fclose(fp);
   /* ここまで */
 
   /* 表示関数呼び出しの無限ループ */
   while(1) {
     Sleep(15); // 0.015秒待つ
-    display(ssd); // 描画関数呼び出し
+    display(ssd,aom); // 描画関数呼び出し
     glFlush(); // 画面描画強制
     SwapBuffers(hDC); // front bufferとback bufferの入れ替え
     if (finish == 1) // finishが1なら描画スレッドを終了させる
