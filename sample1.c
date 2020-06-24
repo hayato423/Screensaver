@@ -2,6 +2,7 @@
 #include <scrnsave.h>
 #include <gl/gl.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <process.h>
 #include <math.h>
 #define M_PI 3.14159265358979
@@ -14,20 +15,6 @@ int wx, wy; // displayの横と縦のpixel数格納用変数
 int finish = 0; /* 生成したスレッドを終了させるかどうかを最初のスレッド
 		   から通知するための変数。0なら終了しない、1なら終了 */
 
-typedef struct color{
-  int red;
-  int gleen;
-  int blue;
-} Color;
-
-typedef struct circle{
-  GLfloat locx;
-  GLfloat locy;
-  GLfloat radius;
-  GLfloat velx;
-  GLfloat vely;
-  Color color;
-} Circle;
 
 
 
@@ -46,6 +33,7 @@ void display (char * ssd,double* aom )
 
   i=i % 100; // URDL100文字格納配列のindexを0から99の範囲で動かすため
   direction = ssd[i]; // i番目の文字をdirectionに代入
+  //printf("%c\n",direction);
   i++; // 次のdisplay関数呼び出し時のためにiの値を増やす
   switch (direction) {
   case 'U':
@@ -89,7 +77,7 @@ void glCirclef(GLfloat locx,GLfloat locy,GLfloat radius,int r,int g,int b) {
 unsigned __stdcall disp (void *arg) {
   char ssd[100];
   //移動量を格納する配列
-  double aom[100];
+  double aom[100] = {0.0};
   FILE *fp=NULL;
 
   EnableOpenGL(); // OpenGL設定
@@ -113,19 +101,25 @@ unsigned __stdcall disp (void *arg) {
     fprintf (stderr, "failed to open the file \"sample1\"\n");
     exit(0);
   }
+
   /*
   for (int i=0; i<100; i++)
-    if (fscanf (fp, "%c,%lf", &ssd[i],&aom[i]) == EOF){ // 100文字なかったら終了
+    if (fscanf (fp, "%s,%lf", &ssd[i],&aom[i]) == EOF){ // 100文字なかったら終了
       fprintf (stderr, "The length of the input is less than 100.\n");
       exit(0);
     }
   */
+  char c;
+  double d;
   int i = 0;
-  while(fscanf(fp,"%c,%lf",&ssd[i],&aom[i]) != EOF){
-    fprintf(stderr,"%c %f\n",ssd[i],aom[i]);
-    i += 1;
+  while(fscanf(fp,"%c %lf",&c,&d) != EOF){
+    if(c != '\n'){
+      ssd[i] = c;
+      aom[i] = d;
+      printf("%d:%c %f\n",i,ssd[i],aom[i]);
+      i += 1;
+    }
   }
-
   fclose(fp);
   /* ここまで */
 
