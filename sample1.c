@@ -30,23 +30,24 @@ void display (char * ssd,double* aom )
   static char direction; // 正方形が動く方向（URDLのどれか）を格納するための変数
   static double locx = 0.0; // 正方形を描画する場所のx座標
   static double locy = 0.0; // 正方形を描画する場所のy座標
-
+  static double amount;
   i=i % 100; // URDL100文字格納配列のindexを0から99の範囲で動かすため
   direction = ssd[i]; // i番目の文字をdirectionに代入
-  //printf("%c\n",direction);
+  amount = aom[i];
+  printf("%d:%c %f\n",i,direction,amount);
   i++; // 次のdisplay関数呼び出し時のためにiの値を増やす
   switch (direction) {
   case 'U':
-    locy+=aom[i];
+    locy+=amount;
     break;
   case 'D':
-    locy-=aom[i];
+    locy-=amount;
     break;
   case 'R':
-    locx+=aom[i];
+    locx+=amount;
     break;
   case 'L':
-    locx-=aom[i];
+    locx-=amount;
     break;
   default: // UDRL以外の文字が含まれていたら終了
     fprintf(stderr, "Invalid character.\n");
@@ -116,7 +117,7 @@ unsigned __stdcall disp (void *arg) {
     if(c != '\n'){
       ssd[i] = c;
       aom[i] = d;
-      printf("%d:%c %f\n",i,ssd[i],aom[i]);
+      //printf("%d:%c %f\n",i,ssd[i],aom[i]);
       i += 1;
     }
   }
