@@ -137,7 +137,7 @@ unsigned __stdcall disp (void *arg) {
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  glClearColor(0.1f, 0.2f, 0.3f, 0.0f); // glClearするときの色設定
+  glClearColor(0.0f, 0.0f, 0.0f, 0.0f); // glClearするときの色設定
   glColor3f(0.9, 0.8, 0.7); // glRectf等で描画するときの色設定
   glViewport(0,0,wx,wy);
   /* ここまで */
