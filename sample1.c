@@ -32,6 +32,7 @@ void display (char * ssd,double* aom ,int size)
   static double locx = 0.0; // 正方形を描画する場所のx座標
   static double locy = 0.0; // 正方形を描画する場所のy座標
   static double amount;
+  static double radius = 10.0;
   static int rgb[3] = {255,255,255};
   i=i % size; // URDL100文字格納配列のindexを0から99の範囲で動かすため
   direction = ssd[i]; // i番目の文字をdirectionに代入
@@ -56,13 +57,16 @@ void display (char * ssd,double* aom ,int size)
     HSV_to_RGB(amount,rgb);
     printf("%d,%d,%d\n",rgb[0],rgb[1],rgb[2]);
     break;
+  case 'S':
+    radius = amount;
+    break;
   default: // UDRL以外の文字が含まれていたら終了
     fprintf(stderr, "Invalid character.\n");
     exit(0);
   }
   glClear(GL_COLOR_BUFFER_BIT); // 画面全体をglClearColorで指定した色で塗る
   //glRectf(locx-20.0, locy-20.0, locx, locy); // 長方形（正方形）
-  glCirclef(locx,locy,10.0,rgb[0],rgb[1],rgb[2]);
+  glCirclef(locx,locy,radius,rgb[0],rgb[1],rgb[2]);
 }
 
 
