@@ -20,6 +20,7 @@ int size = 0;
 
 
 void glCirclef(GLfloat,GLfloat,GLfloat,int,int,int);
+void glGrowCircle(GLint,GLint,,GLint,int,int,int);
 void HSV_to_RGB(double ,int *);
 
 
@@ -86,6 +87,10 @@ void glCirclef(GLfloat locx,GLfloat locy,GLfloat radius,int r,int g,int b) {
     glVertex3d(x,y,0.0);
   }
   glEnd();
+}
+
+void glGrowCircle(GLint locx,GLint,locy,GLint growPower,int r,int g, int b){
+
 }
 
 void HSV_to_RGB(double h,int *rgb){
