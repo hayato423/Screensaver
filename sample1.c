@@ -19,8 +19,9 @@ int size = 0;
 
 
 
-void glCirclef(GLfloat,GLfloat,GLfloat,int,int,int);
-void HSV_to_RGB(double ,int *);
+void glCirclef(GLfloat,GLfloat,GLfloat,GLfloat,GLfloat,GLfloat);
+void glGlowCircle(GLfloat,GLfloat,GLfloat,GLfloat,GLfloat,GLfloat);
+void HSV_to_RGB(double ,GLfloat *);
 
 
 
@@ -33,7 +34,7 @@ void display (char * ssd,double* aom ,int size)
   static double locy = 0.0; // 正方形を描画する場所のy座標
   static double amount;
   static double radius = 10.0;
-  static int rgb[3] = {255,255,255};
+  static GLfloat rgb[3] = {1.0,1.0,1.0};
   i=i % size; // URDL100文字格納配列のindexを0から99の範囲で動かすため
   direction = ssd[i]; // i番目の文字をdirectionに代入
   amount = aom[i];
@@ -53,9 +54,8 @@ void display (char * ssd,double* aom ,int size)
     locx-=amount;
     break;
   case 'C':
-    printf("h=%lf\n",amount);
+    //printf("h=%lf\n",amount);
     HSV_to_RGB(amount,rgb);
-    printf("%d,%d,%d\n",rgb[0],rgb[1],rgb[2]);
     break;
   case 'S':
     radius = amount;
@@ -66,12 +66,13 @@ void display (char * ssd,double* aom ,int size)
   }
   glClear(GL_COLOR_BUFFER_BIT); // 画面全体をglClearColorで指定した色で塗る
   //glRectf(locx-20.0, locy-20.0, locx, locy); // 長方形（正方形）
-  glCirclef(locx,locy,radius,rgb[0],rgb[1],rgb[2]);
+  //glCirclef(locx,locy,radius,rgb[0],rgb[1],rgb[2]);
+  glGlowCircle(locx,locy,radius,rgb[0],rgb[1],rgb[2]);
 }
 
 
 //円を描画する関数
-void glCirclef(GLfloat locx,GLfloat locy,GLfloat radius,int r,int g,int b) {
+void glCirclef(GLfloat locx,GLfloat locy,GLfloat radius,GLfloat r,GLfloat g,GLfloat b) {
   int n = 100;
   double rate;
   GLfloat x,y;
@@ -88,40 +89,64 @@ void glCirclef(GLfloat locx,GLfloat locy,GLfloat radius,int r,int g,int b) {
   glEnd();
 }
 
-void HSV_to_RGB(double h,int *rgb){
-  double s = 255.0,v=255.0;
-  double max = v;
-  double min = max - ((s / 255.0) * max);
+void glGlowCircle(GLfloat locx,GLfloat locy,GLfloat radius,GLfloat r, GLfloat g, GLfloat b){
+  double left = -50*wx/wy, right=50*wx/wy, bottom=-50, top=50;
+  GLfloat max = 100.0;
+  glPointSize(5);
+  glBegin(GL_POINTS);
+  for(GLfloat y = bottom; y < top; y+=0.4){
+    for(GLfloat x = left; x < right; x+=0.4){
+      GLfloat dx = locx - x;
+      GLfloat dy = locy - y;
+      GLfloat distance = sqrt(dx*dx + dy*dy);
+      if(distance < 1){
+        distance = 1;
+      }
+      GLfloat R = (10*radius*r)/distance;
+      GLfloat G = (10*radius*g)/distance;
+      GLfloat B = (10*radius*b)/distance;
+      if(R > max) R = max;
+      if(G > max) G = max;
+      if(B > max) B = max;
+      glColor3b(R,G,B);
+      glVertex2d(x,y);
+    }
+  }
+  glEnd();
+}
+
+void HSV_to_RGB(double h,GLfloat *rgb){
+  GLfloat s = 255.0,v=255.0;
+  GLfloat max = v;
+  GLfloat min = max - ((s / 255.0) * max);
   if(h < 60){
-    printf("a\n");
-    rgb[0] = (int)max;
-    rgb[1] = (int)((h / 60.0) * (max - min) + min);
-    rgb[2] = (int)min;
+    rgb[0] = max / 255.0;
+    rgb[1] = ((h / 60.0) * (max - min) + min)/255.0;
+    rgb[2] = min/255.0;
   }else if(60 <= h && h < 120){
-    printf("b\n");
-    rgb[0] = (int)(((120.0-h) / 60.0) * (max - min) + min);
-    rgb[1] = (int)max;
-    rgb[2] = (int)min;
+    rgb[0] = (((120.0-h) / 60.0) * (max - min) + min)/255.0;
+    rgb[1] = max / 255.0;
+    rgb[2] = min / 255.0;
   }else if(120 <= h && h < 180){
-    printf("c\n");
-    rgb[0] = (int)min;
-    rgb[1] = (int)max;
-    rgb[2] = (int)(((h-120.0) / 60.0) * (max - min) + min);
+    rgb[0] = min / 255.0;
+    rgb[1] = max / 255.0;
+    rgb[2] = (((h-120.0) / 60.0) * (max - min) + min)/255.0;
   }else if(180 <= h && h < 240){
-    printf("c\n");
-    rgb[0] = (int)min;
-    rgb[1] = (int)(((240.0-h) / 60.0) * (max - min) + min);
-    rgb[2] = (int)max;
+    rgb[0] = min / 255.0;
+    rgb[1] = (((240.0-h) / 60.0) * (max - min) + min)/ 255.0;
+    rgb[2] = max / 255.0;
   }else if(240 <= h && h < 300){
-    printf("d\n");
-    rgb[0] = (int)(((h-240.0) / 60.0) * (max - min) + min);
-    rgb[1] = (int)min;
-    rgb[2] = (int)max;
-  }else if(300 <= h){
-    printf("e\n");
-    rgb[0] = (int)max;
-    rgb[1] = (int)min;
-    rgb[2] = (int)(((360.0-h)/60.0) * (max-min) + min);
+    rgb[0] = (((h-240.0) / 60.0) * (max - min) + min)/255.0;
+    rgb[1] = min / 255.0;
+    rgb[2] = max/ 255.0;
+  }else if(300 <= h && h < 360){
+    rgb[0] = max/255.0;
+    rgb[1] = min/255.0;
+    rgb[2] = (((360.0-h)/60.0) * (max-min) + min)/255.0;
+  }else{
+    rgb[0] = 1.0;
+    rgb[1] = 1.0;
+    rgb[2] = 1.0;
   }
 }
 
@@ -137,7 +162,6 @@ unsigned __stdcall disp (void *arg) {
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glOrtho(-50.0*wx/wy, 50.0*wx/wy, -50.0, 50.0, -50.0, 50.0); // 座標系設定
-
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
@@ -177,7 +201,7 @@ unsigned __stdcall disp (void *arg) {
 
   /* 表示関数呼び出しの無限ループ */
   while(1) {
-    Sleep(15); // 0.015秒待つ
+    //Sleep(15); // 0.015秒待つ
     display(ssd,aom,size); // 描画関数呼び出し
     glFlush(); // 画面描画強制
     SwapBuffers(hDC); // front bufferとback bufferの入れ替え
