@@ -20,7 +20,7 @@ int size = 0;
 
 
 void glCirclef(GLfloat,GLfloat,GLfloat,GLfloat,GLfloat,GLfloat);
-void glGrowCircle(GLfloat,GLfloat,GLfloat,GLfloat,GLfloat,GLfloat);
+void glGlowCircle(GLfloat,GLfloat,GLfloat,GLfloat,GLfloat,GLfloat);
 void HSV_to_RGB(double ,GLfloat *);
 
 
@@ -54,9 +54,8 @@ void display (char * ssd,double* aom ,int size)
     locx-=amount;
     break;
   case 'C':
-    printf("h=%lf\n",amount);
+    //printf("h=%lf\n",amount);
     HSV_to_RGB(amount,rgb);
-    printf("%d,%d,%d\n",rgb[0],rgb[1],rgb[2]);
     break;
   case 'S':
     radius = amount;
@@ -68,7 +67,7 @@ void display (char * ssd,double* aom ,int size)
   glClear(GL_COLOR_BUFFER_BIT); // 画面全体をglClearColorで指定した色で塗る
   //glRectf(locx-20.0, locy-20.0, locx, locy); // 長方形（正方形）
   //glCirclef(locx,locy,radius,rgb[0],rgb[1],rgb[2]);
-  glGrowCircle(locx,locy,radius,rgb[0],rgb[1],rgb[2]);
+  glGlowCircle(locx,locy,radius,rgb[0],rgb[1],rgb[2]);
 }
 
 
@@ -90,30 +89,25 @@ void glCirclef(GLfloat locx,GLfloat locy,GLfloat radius,GLfloat r,GLfloat g,GLfl
   glEnd();
 }
 
-void glGrowCircle(GLfloat locx,GLfloat locy,GLfloat radius,GLfloat r, GLfloat g, GLfloat b){
-  //double left = -50*wx/wy, right=50*wx/wy, bottom=-50, top=50;
-  glPointSize(2);
+void glGlowCircle(GLfloat locx,GLfloat locy,GLfloat radius,GLfloat r, GLfloat g, GLfloat b){
+  double left = -50*wx/wy, right=50*wx/wy, bottom=-50, top=50;
+  GLfloat max = 100.0;
+  glPointSize(5);
   glBegin(GL_POINTS);
-  GLfloat border = radius;
-  for(GLfloat y = locy-border; y < locy+border; y+=0.05){
-    for(GLfloat x = locx-border; x < locx+border; x+=0.05){
+  for(GLfloat y = bottom; y < top; y+=0.4){
+    for(GLfloat x = left; x < right; x+=0.4){
       GLfloat dx = locx - x;
       GLfloat dy = locy - y;
-      GLfloat distance = dx*dx + dy*dy;
+      GLfloat distance = sqrt(dx*dx + dy*dy);
       if(distance < 1){
         distance = 1;
       }
-      GLfloat R = (10*radius*r) / distance;
-      GLfloat G = (10*radius*g) / distance;
-      GLfloat B = (10*radius*b) / distance;
-      if(R > 100) R = 100;
-      if(G > 100) G = 100;
-      if(B > 100) B = 100;
-      if(distance >= radius*radius){
-        R = 0.0f;
-        G = 0.0f;
-        B = 0.0f;
-      }
+      GLfloat R = (10*radius*r)/distance;
+      GLfloat G = (10*radius*g)/distance;
+      GLfloat B = (10*radius*b)/distance;
+      if(R > max) R = max;
+      if(G > max) G = max;
+      if(B > max) B = max;
       glColor3b(R,G,B);
       glVertex2d(x,y);
     }
@@ -126,35 +120,33 @@ void HSV_to_RGB(double h,GLfloat *rgb){
   GLfloat max = v;
   GLfloat min = max - ((s / 255.0) * max);
   if(h < 60){
-    printf("a\n");
     rgb[0] = max / 255.0;
     rgb[1] = ((h / 60.0) * (max - min) + min)/255.0;
     rgb[2] = min/255.0;
   }else if(60 <= h && h < 120){
-    printf("b\n");
     rgb[0] = (((120.0-h) / 60.0) * (max - min) + min)/255.0;
     rgb[1] = max / 255.0;
     rgb[2] = min / 255.0;
   }else if(120 <= h && h < 180){
-    printf("c\n");
     rgb[0] = min / 255.0;
     rgb[1] = max / 255.0;
     rgb[2] = (((h-120.0) / 60.0) * (max - min) + min)/255.0;
   }else if(180 <= h && h < 240){
-    printf("c\n");
     rgb[0] = min / 255.0;
     rgb[1] = (((240.0-h) / 60.0) * (max - min) + min)/ 255.0;
     rgb[2] = max / 255.0;
   }else if(240 <= h && h < 300){
-    printf("d\n");
     rgb[0] = (((h-240.0) / 60.0) * (max - min) + min)/255.0;
     rgb[1] = min / 255.0;
     rgb[2] = max/ 255.0;
-  }else if(300 <= h){
-    printf("e\n");
+  }else if(300 <= h && h < 360){
     rgb[0] = max/255.0;
     rgb[1] = min/255.0;
     rgb[2] = (((360.0-h)/60.0) * (max-min) + min)/255.0;
+  }else{
+    rgb[0] = 1.0;
+    rgb[1] = 1.0;
+    rgb[2] = 1.0;
   }
 }
 
