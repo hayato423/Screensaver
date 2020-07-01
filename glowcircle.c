@@ -151,9 +151,9 @@ void HSV_to_RGB(double h,GLfloat *rgb){
 }
 
 unsigned __stdcall disp (void *arg) {
-  char ssd[255];
+  char ssd[1024];
   //移動量を格納する配列
-  double aom[255] = {0.0};
+  double aom[1024] = {0.0};
   FILE *fp=NULL;
 
   EnableOpenGL(); // OpenGL設定
@@ -171,9 +171,9 @@ unsigned __stdcall disp (void *arg) {
   /* ここまで */
 
   /* スクリーンセーバ記述プログラム読み込み */
-  fp=fopen ("sample1", "r");
+  fp=fopen ("glowcircle", "r");
   if (fp==NULL) {
-    fprintf (stderr, "failed to open the file \"sample1\"\n");
+    fprintf (stderr, "failed to open the file \"glowcircle\"\n");
     exit(0);
   }
 
